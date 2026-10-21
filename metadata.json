@@ -1,0 +1,12 @@
+{
+  "KPackageStructure": "KWin/Script",
+  "KPlugin": {
+    "Id": "windows-snap",
+    "Name": "KDE Window Snap",
+    "Description": "Deterministic half-screen placement and minimize/restore with arrow keys",
+    "Version": "1.0.0",
+    "License": "MIT"
+  },
+  "X-Plasma-API": "javascript",
+  "X-Plasma-MainScript": "code/main.js"
+}

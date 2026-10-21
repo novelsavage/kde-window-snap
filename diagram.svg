@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="210" viewBox="0 0 720 210">
+<rect width="720" height="210" rx="12" fill="#17212f"/>
+<g font-family="sans-serif" fill="#edf3ff" text-anchor="middle" font-size="15">
+<text x="120" y="30">Meta + Left</text><text x="360" y="30">Meta + Up</text><text x="600" y="30">Meta + Right</text>
+<g fill="#26384e" stroke="#879bb4"><rect x="30" y="48" width="180" height="112"/><rect x="270" y="48" width="180" height="112"/><rect x="510" y="48" width="180" height="112"/></g>
+<g fill="#69baff"><rect x="31" y="49" width="89" height="110"/><rect x="271" y="49" width="178" height="110"/><rect x="600" y="49" width="89" height="110"/></g>
+<text x="120" y="187">Full-height left half</text><text x="360" y="187">Maximize / bring back</text><text x="600" y="187">Full-height right half</text>
+</g></svg>
