@@ -24,6 +24,7 @@ def deploy():
     for name in ('metadata.json', 'manage.py', 'README.md', 'diagram.svg', 'LICENSE'):
         shutil.copy2(ROOT / name, TARGET / name)
     shutil.copytree(ROOT / 'contents', TARGET / 'contents', dirs_exist_ok=True)
+    shutil.copytree(ROOT / 'docs', TARGET / 'docs', dirs_exist_ok=True)
 
 
 def main():
