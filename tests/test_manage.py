@@ -24,9 +24,10 @@ class InstallerTests(unittest.TestCase):
         self.original.update({n: [] for n in self.module.KEYS})
         self.keys = {n: list(v) for n, v in self.original.items()}
         self.loaded = False
+        self.running = False
         self.fail = False
         self.accel = SimpleNamespace(shortcut=lambda a: self.keys[a[1]], setShortcut=self.assign)
-        self.scripting = SimpleNamespace(isScriptLoaded=lambda _: self.loaded, unloadScript=self.unload)
+        self.scripting = SimpleNamespace(isScriptLoaded=lambda _: self.loaded, unloadScript=self.unload, start=self.start)
         self.bus = SimpleNamespace(get_object=lambda service, path: path, call_blocking=self.load)
         self.dbus = SimpleNamespace(SessionBus=lambda: self.bus, Array=lambda v, **_: v,
                                     UInt32=int, Interface=self.interface)
@@ -36,7 +37,7 @@ class InstallerTests(unittest.TestCase):
             return self.accel
         if name == 'org.kde.kwin.Scripting':
             return self.scripting
-        return SimpleNamespace(run=lambda: None)
+        raise AssertionError('Do not address Script<ID>: its object path may belong to another script')
 
     def assign(self, action, keys, flags):
         if self.fail and action[1] == 'WindowsSnapRight' and keys:
@@ -47,6 +48,10 @@ class InstallerTests(unittest.TestCase):
 
     def unload(self, _):
         self.loaded = False
+        self.running = False
+
+    def start(self):
+        self.running = self.loaded
 
     def load(self, *args):
         self.assertEqual(args[4], 'ss')
@@ -62,11 +67,13 @@ class InstallerTests(unittest.TestCase):
 
     def test_fresh_install_update_restore_and_uninstall(self):
         self.command('install')
+        self.assertTrue(self.running)
         saved = self.module.BACKUP.read_text()
         self.assertEqual(json.loads(saved), self.original)
         self.assertTrue((self.module.TARGET / 'metadata.json').is_file())
         self.assertNotEqual(self.keys, self.original)
         self.command('install')
+        self.assertTrue(self.running)
         self.assertEqual(self.module.BACKUP.read_text(), saved)
         self.command('restore')
         self.assertEqual(self.keys, self.original)

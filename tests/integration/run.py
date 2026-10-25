@@ -146,6 +146,23 @@ def inside(args):
               'last tiled window changes sides without resetting split')
         action('WindowsSnapLeft', 'WindowsSnapDown', 'SnapTestCloseLeft', 'WindowsSnapUp')
         check(snapshot('closed')['right']['max'] == 3, 'closed restore target discarded')
+        # Reproduce KWin 6.6's reused object ID: unload script 0 while a higher
+        # ID remains. The new script's path can address the other script.
+        dummy = root / 'dummy.js'
+        dummy.write_text('// intentionally left dormant\n')
+        bus.call_blocking('org.kde.KWin', '/Scripting', 'org.kde.kwin.Scripting',
+                         'loadScript', 'ss', (str(dummy), 'snap-test-dummy'))
+        scripting = dbus.Interface(bus.get_object('org.kde.KWin', '/Scripting'), 'org.kde.kwin.Scripting')
+        scripting.unloadScript('snap-integration')
+        wait_for(lambda: not scripting.isScriptLoaded('snap-integration'), 'Script did not unload')
+        marker = root / 'reloaded.js'
+        marker.write_text('callDBus("local.SnapTest", "/test", "local.SnapTest", "report", JSON.stringify({reloaded:true}));\n')
+        (root / 'snapshot.json').unlink(missing_ok=True)
+        bus.call_blocking('org.kde.KWin', '/Scripting', 'org.kde.kwin.Scripting',
+                         'loadScript', 'ss', (str(marker), 'snap-test-reloaded'))
+        scripting.start()
+        wait_for(lambda: (root / 'snapshot.json').exists(), 'Reloaded script did not execute')
+        check(json.loads((root / 'snapshot.json').read_text()).get('reloaded'), 'reload starts despite reused script object ID')
         result['error'] = None
     except Exception as error:
         result['error'] = str(error)

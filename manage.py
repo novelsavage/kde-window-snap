@@ -55,12 +55,16 @@ def main():
                         '--key', 'windows-snapEnabled', value], check=True)
 
     def load():
+        # start() consults plugin enablement, so persist it before starting.
+        enabled('true')
         script_id = bus.call_blocking('org.kde.KWin', '/Scripting', 'org.kde.kwin.Scripting',
                                      'loadScript', 'ss', (str(TARGET / 'contents/code/main.js'), 'windows-snap'))
         if script_id < 0:
             raise RuntimeError('KWin could not load the script')
-        dbus.Interface(bus.get_object('org.kde.KWin', f'/Scripting/Script{script_id}'),
-                       'org.kde.kwin.Script').run()
+        # KWin 6.6 uses the number of loaded scripts as an object ID. After an
+        # unload, that ID may collide with another script's D-Bus object path.
+        # Start through Scripting's internal list instead of Script<ID>.run().
+        scripting.start()
 
     loaded = scripting.isScriptLoaded('windows-snap')
     if command in ('install', 'enable'):
