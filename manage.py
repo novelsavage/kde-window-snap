@@ -21,7 +21,7 @@ def deploy():
     if ROOT == TARGET.resolve():
         return
     TARGET.mkdir(parents=True, exist_ok=True)
-    for name in ('metadata.json', 'manage.py', 'README.md', 'diagram.svg', 'LICENSE'):
+    for name in ('metadata.json', 'manage.py', 'README.md', 'diagram.svg'):
         shutil.copy2(ROOT / name, TARGET / name)
     shutil.copytree(ROOT / 'contents', TARGET / 'contents', dirs_exist_ok=True)
     shutil.copytree(ROOT / 'docs', TARGET / 'docs', dirs_exist_ok=True)

@@ -132,6 +132,3 @@ v1.1の連動リサイズは、**独立したD-Bus・設定・Waylandソケッ�
 [KWin 6.6 Workspace](https://github.com/KDE/kwin/blob/Plasma/6.6/src/scripting/workspace_wrapper.h)、
 [Window](https://github.com/KDE/kwin/blob/Plasma/6.6/src/window.h)。
 
-## ライセンス
-
-[MIT](LICENSE)
